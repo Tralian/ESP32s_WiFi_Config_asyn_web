@@ -141,6 +141,20 @@ String outputState(int output)
     return "";
   }
 }
+
+void notFound(AsyncWebServerRequest *request) {
+    request->send(404, "text/plain", "Not found");
+}
+/**
+  * @brief	/led  handler
+  */
+void __attribute__((weak)) Web_led_handler(String inputMessage1,String inputMessage2) 
+{;}
+/**
+  * @brief	/wificonf  handler
+  */
+void __attribute__((weak)) Web_wificonf_handler(String mySSID,String myPassword) 
+{;}
 /**
     @brief	Create asynchronous web server 
             and Setting mDNS : autoff.local
@@ -169,20 +183,13 @@ void myWIFI_Webserver(void)
     {
       inputMessage1 = request->getParam(PARAM_INPUT_1)->value();
       inputMessage2 = request->getParam(PARAM_INPUT_2)->value();
-
-      digitalWrite(inputMessage1.toInt(), inputMessage2.toInt());
-
     }
     else 
     {
-      inputMessage1 = "No message sent";
-      inputMessage2 = "No message sent";
-
+      inputMessage1 = "None";
+      inputMessage2 = "None";
     }
-    Serial.print("GPIO: ");
-    Serial.print(inputMessage1);
-    Serial.print(" - Set to: ");
-    Serial.println(inputMessage2);
+    Web_led_handler(inputMessage1,inputMessage2);
     request->send(200, "text/plain", "OK");
   }
   );
@@ -201,19 +208,21 @@ void myWIFI_Webserver(void)
       input_SSID = "none";
       input_Password = "none";
     }
-    Serial.println("SSID=:"+input_SSID);
-    Serial.println("Password=:"+input_Password);
-
+    Web_wificonf_handler(input_SSID,input_Password);
     request->send(200, "text/html", "<P>Wi-Fi Setting successful</P> <P>SSID:  "+ 
-                                      input_SSID+"</P><P>Password :"+input_Password+"</P><a href=\"/\">Return to Home Page</a>");
+                 input_SSID+"</P><P>Password :"+input_Password+"</P><a href=\"/\">Return to Home Page</a>");
   });
 
   if(!MDNS.begin("Autoff"))
   {
     Serial.println("Error Starting mDNS");
   } 
+  //server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);//only when requested from AP
+
+  server.onNotFound(notFound);
   // Start server
   server.begin();
 
 
 }
+
