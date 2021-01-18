@@ -45,10 +45,18 @@ void setup()
   BSP_LED_Init();
   
   myWIFI_scan_ssid();
-  
-  myWIFI_connect();
 
-  myWIFI_Webserver();
+  if(myWIFI_connect(&sw)==true)
+  {
+      myWIFI_Webserver();
+  }
+  else//if can't connect to wifi , enter AP mode
+  {
+      myWIFI_scan_ssid();
+
+  }
+  
+
 }
 
 void loop() 

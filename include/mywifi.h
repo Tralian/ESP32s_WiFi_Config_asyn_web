@@ -1,6 +1,7 @@
 #ifndef MYWIFI_h
 #define MYWIFI_h
 
+#include <main.h>
 
 #include <WiFi.h>
 #include <AsyncTCP.h>
@@ -8,7 +9,7 @@
 #include <ESPmDNS.h>
 
 void myWIFI_scan_ssid(void);
-IPAddress myWIFI_connect(void);
+bool myWIFI_connect(System_infor_t *me);
 void myWIFI_Webserver(void);
 
 #endif

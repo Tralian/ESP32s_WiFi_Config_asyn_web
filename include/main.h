@@ -19,7 +19,7 @@ typedef enum
 
 typedef struct
 {
-
+    
 	String SSID;
     uint8_t SSID_len;
 	String Password;

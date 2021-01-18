@@ -3,9 +3,6 @@
 // Import required libraries
 #include "mywifi.h"
 
-const char* ssid = "myLoad";
-const char* password =  "0912345678";
-
 const char* PARAM_INPUT_1 = "output";
 const char* PARAM_INPUT_2 = "state";
 const char* PARAM_INPUT_SSID = "SSID";
@@ -91,18 +88,40 @@ void myWIFI_scan_ssid(void)
 	* @brief	Connect to Wi-Fi and return IP
     * @retval	IPAddress 
 	*/
-IPAddress  myWIFI_connect(void)
-{
-  WiFi.begin(ssid, password);
+bool  myWIFI_connect(System_infor_t *me)
+{ 
+  uint8_t SSID_len=me->SSID_len;
+  uint8_t PW_len=me->Password_len;
+
+  char SSID_buf[SSID_len+1];
+  char PW_buf[PW_len+1];
+
+  me->SSID.toCharArray(SSID_buf,SSID_len+1);
+  me->Password.toCharArray(PW_buf,PW_len+1);
+
+  
+  WiFi.disconnect();//reset wifi
+  WiFi.begin(SSID_buf, PW_buf);
   while (WiFi.status() != WL_CONNECTED) 
   {
+    static uint8_t try_time=0;
     delay(1000);
     Serial.println("Connecting to WiFi..");
+    try_time++;
+    if(try_time%3==0)
+    {
+      WiFi.disconnect();//reset wifi
+      WiFi.begin(SSID_buf, PW_buf);
+    }
+    if(try_time==15)
+    {
+      return false;
+    }
   }
   // Print ESP Local IP Address
   IPAddress ip=WiFi.localIP();
   Serial.println(ip);
-  return ip;
+  return true;
 }
 /**
     @brief	Replaces placeholder with  web page
