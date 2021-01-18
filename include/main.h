@@ -21,9 +21,9 @@ typedef struct
 {
 
 	String SSID;
-    int SSID_len;
+    uint8_t SSID_len;
 	String Password;
-    int Password_len;
+    uint8_t Password_len;
     
 
 }System_infor_t;

@@ -41,7 +41,7 @@ void BSP_EEprom_Read(EEprom_t infro,System_infor_t *me)
       {
         for (int i = 0; i < me->SSID_len; ++i)
         {
-          eeprom_read+=EEPROM.read(EE_ADD_SSID_START+i);
+          eeprom_read+=char(EEPROM.read(EE_ADD_SSID_START+i));
           me->SSID=eeprom_read;
         }
       }
@@ -52,7 +52,7 @@ void BSP_EEprom_Read(EEprom_t infro,System_infor_t *me)
       {
         for (int i = 0; i < me->Password_len; ++i)
         {
-          eeprom_read+=EEPROM.read(EE_ADD_SSID_START+i);
+          eeprom_read+=char(EEPROM.read(EE_ADD_PW_START+i));
           me->Password=eeprom_read;
         }
       }
@@ -67,31 +67,25 @@ void BSP_EEprom_WIFIconfig(String mySSID,String myPassword)
   uint8_t SSID_len=mySSID.length();
   uint8_t PW_len=myPassword.length();
 
-  char SSID_buf[SSID_len];
-  char PW_buf[PW_len];
+  char SSID_buf[SSID_len+1];
+  char PW_buf[PW_len+1];
   
-  mySSID.toCharArray(SSID_buf,SSID_len);
-  myPassword.toCharArray(PW_buf,PW_len);
-
-  String eeprom_read="";
+  mySSID.toCharArray(SSID_buf,SSID_len+1);
+  myPassword.toCharArray(PW_buf,PW_len+1);
+  for(uint8_t i=0;i<SSID_len;i++)
+  {
+    Serial.print(SSID_buf[i]);
+  }
+  Serial.print("\n");
   if(SSID_len!=0&&PW_len!=0)
   {
       EEPROM.write(EE_ADD_SSID_LEN,SSID_len);
       
       for(uint8_t i=0;i<SSID_len;i++)
       {
-        EEPROM.write(EE_ADD_SSID_START+i,(int)SSID_buf[i]);
+        EEPROM.write(EE_ADD_SSID_START+i,SSID_buf[i]);
       }
-      Serial.println("length of SSID ="+String(EEPROM.read(EE_ADD_SSID_LEN)));
-      /* Check EEprom storge*/
-      {
-        eeprom_read="";
-        for(uint8_t i=0;i<SSID_len;i++)
-        {
-        eeprom_read+=char(EEPROM.read(EE_ADD_SSID_START+i));
-        }     
-        Serial.println("SSID: "+eeprom_read);
-      }
+
 
       EEPROM.write(EE_ADD_PW_LEN,PW_len);
 
@@ -99,6 +93,24 @@ void BSP_EEprom_WIFIconfig(String mySSID,String myPassword)
       {
         EEPROM.write(EE_ADD_PW_START+i,PW_buf[i]);
       }
+      String eeprom_read="";
+      /* Check EEprom storge*/
+      {      
+        Serial.println("length of SSID ="+String(EEPROM.read(EE_ADD_SSID_LEN)));
+        eeprom_read="";
+        for(uint8_t i=0;i<SSID_len;i++)
+        {
+        eeprom_read+=char(EEPROM.read(EE_ADD_SSID_START+i));
+        }     
+        Serial.println("SSID: "+eeprom_read);
+      }
+      if(eeprom_read.equals(mySSID))
+      {
+
+        Serial.println("SSID storage successful");
+
+      }
+
       /* Check EEprom storge*/
       {
         Serial.println("length of Pass word ="+String(EEPROM.read(EE_ADD_PW_LEN)));
@@ -109,7 +121,12 @@ void BSP_EEprom_WIFIconfig(String mySSID,String myPassword)
         eeprom_read+=char(EEPROM.read(EE_ADD_PW_START+i));
         }     
         Serial.println("Pass word: "+eeprom_read);
+        if(eeprom_read.equals(myPassword))
+        {
+          Serial.println("Password storage successful");
+        }
       }
+      EEPROM.commit(); 
            
   }
 
