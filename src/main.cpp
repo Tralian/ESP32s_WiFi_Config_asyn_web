@@ -18,7 +18,7 @@ void Web_led_handler(String inputMessage1,String inputMessage2)
     {
       digitalWrite(inputMessage1.toInt(), inputMessage2.toInt());
     }
-
+    
 }
 /**
   * @brief	/wificonf  handler
@@ -26,6 +26,9 @@ void Web_led_handler(String inputMessage1,String inputMessage2)
 void  Web_wificonf_handler(String mySSID,String myPassword) 
 {
     BSP_EEprom_WIFIconfig(mySSID,myPassword);
+
+    ESP.restart();
+
 }
 void setup()
 {
@@ -45,15 +48,14 @@ void setup()
   BSP_LED_Init();
   
   myWIFI_scan_ssid();
-
+  // it will try to connect to WIFI with 15 second
   if(myWIFI_connect(&sw)==true)
   {
       myWIFI_Webserver();
   }
   else//if can't connect to wifi , enter AP mode
   {
-      myWIFI_scan_ssid();
-
+      myWIFI_AP_Webserver(); 
   }
   
 
@@ -63,12 +65,3 @@ void loop()
 {
 
 }
-
-/**
-	* @brief	modify analog watchdog setting in run time, wrapper function
-	* @param	lower bound for adc monitor in mV
-	* @param	upper bound for adc monitor in mV
-	* @retval	VDD in mV.
-  * @note		@ref BSP_MT_ConfigADCBattMonitor must be called first.
-	* 				This routine does NOT initialize ADC, ONLY modify the threshold registers.
-	*/
