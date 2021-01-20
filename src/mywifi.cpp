@@ -2,8 +2,8 @@
 
 // Import required libraries
 #include "mywifi.h"
-const char* local_ssid="YZTEK";
-const char* mDNS_name="YZTEK";
+const char* local_ssid="your_LocalAP_SSID";
+const char* mDNS_name="yours_DNS_name";
 
 const char* PARAM_INPUT_1 = "output";
 const char* PARAM_INPUT_2 = "state";
